@@ -1,0 +1,440 @@
+swagger: "2.0"
+	info:
+	  description: "Tickets for different events"
+	  version: "1.0.0"
+	  title: "Lab 5"
+	tags:
+	- name: "Event"
+	  description: "Everything about your Events"
+	- name: "Ticket store"
+	  description: "Order and book tickets"
+	- name: "user"
+	  description: "Operations about user"
+	schemes:
+	- "https"
+	- "http"
+	paths:
+	  /Event:
+	    post:
+	      tags:
+	      - "Event"
+	      summary: "Add a new event to the database"
+	      description: ""
+	      operationId: "addEv"
+	      consumes:
+	      - "application/json"
+	      - "application/xml"
+	      produces:
+	      - "application/xml"
+	      - "application/json"
+	      parameters:
+	      - in: "body"
+	        name: "body"
+	        description: "Event object that needs to be added to the database"
+	        required: true
+	        schema:
+	          $ref: "#/definitions/Event"
+	      responses:
+	        405:
+	          description: "Invalid input"
+	      security:
+	      - petstore_auth:
+	        - "write:events"
+	        - "read:events"
+	    put:
+	      tags:
+	      - "Event"
+	      summary: "Update an existing Event"
+	      description: ""
+	      operationId: "updateEv"
+	      consumes:
+	      - "application/json"
+	      - "application/xml"
+	      produces:
+	      - "application/xml"
+	      - "application/json"
+	      parameters:
+	      - in: "body"
+	        name: "body"
+	        description: "Event object that needs to be added to the database"
+	        required: true
+	        schema:
+	          $ref: "#/definitions/Event"
+	      responses:
+	        400:
+	          description: "Invalid ID supplied"
+	        404:
+	          description: "Event not found"
+	        405:
+	          description: "Validation exception"
+	      security:
+	      - petstore_auth:
+	        - "write:events"
+	        - "read:events"
+	  /Event/:
+	    get:
+	      tags:
+	      - "Event"
+	      summary: "Find event by ID"
+	      description: "Returns a single event"
+	      operationId: "getEventById"
+	      produces:
+	      - "application/xml"
+	      - "application/json"
+	      parameters:
+	      - name: "EvId"
+	        in: "path"
+	        description: "ID of event to return"
+	        required: true
+	        type: "integer"
+	        format: "int64"
+	      responses:
+	        200:
+	          description: "successful operation"
+	          schema:
+	            $ref: "#/definitions/Event"
+	        400:
+	          description: "Invalid ID supplied"
+	        404:
+	          description: "Event not found"
+	      security:
+	      - api_key: []
+	    delete:
+	      tags:
+	      - "Event"
+	      summary: "Deletes a event"
+	      description: ""
+	      operationId: "deleteEv"
+	      produces:
+	      - "application/xml"
+	      - "application/json"
+	      parameters:
+	      - name: "api_key"
+	        in: "header"
+	        required: false
+	        type: "string"
+	      - name: "EvId"
+	        in: "path"
+	        description: "Event id to delete"
+	        required: true
+	        type: "integer"
+	        format: "int64"
+	      responses:
+	        400:
+	          description: "Invalid ID supplied"
+	        404:
+	          description: "Event not found"
+	      security:
+	      - petstore_auth:
+	        - "write:events"
+	        - "read:events"
+	  /Ticket store/order:
+	    post:
+	      tags:
+	      - "Ticket store"
+	      summary: "Purchase a ticket"
+	      description: ""
+	      operationId: "purchase"
+	      produces:
+	      - "application/xml"
+	      - "application/json"
+	      parameters:
+	      - in: "body"
+	        name: "body"
+	        description: "order placed for purchasing the ticket"
+	        required: true
+	        schema:
+	          $ref: "#/definitions/Purchase"
+	      responses:
+	        200:
+	          description: "successful operation"
+	          schema:
+	            $ref: "#/definitions/Purchase"
+	        400:
+	          description: "Invalid purchase"
+	    put:
+	      tags:
+	      - "Ticket store"
+	      summary: "Book a ticket"
+	      description: ""
+	      operationId: "book"
+	      produces:
+	      - "application/xml"
+	      - "application/json"
+	      parameters:
+	      - in: "body"
+	        name: "body"
+	        description: "booking placed for purchasing the ticket"
+	        required: true
+	        schema:
+	          $ref: "#/definitions/Booking"
+	      responses:
+	        200:
+	          description: "successful operation"
+	          schema:
+	            $ref: "#/definitions/Booking"
+	        400:
+	          description: "Invalid booking"      
+	  /Ticket store/order/{orderId}:
+	    delete:
+	      tags:
+	      - "Ticket store"
+	      summary: "Cancel booking"
+	      description: "For valid response try integer IDs with positive integer value.         Negative or non-integer values will generate API errors"
+	      operationId: "cancelBook"
+	      produces:
+	      - "application/xml"
+	      - "application/json"
+	      parameters:
+	      - name: "orderId"
+	        in: "path"
+	        description: "ID of the booking that needs to be canceled"
+	        required: true
+	        type: "integer"
+	        minimum: 1.0
+	        format: "int64"
+	      responses:
+	        400:
+	          description: "Invalid ID supplied"
+	        404:
+	          description: "Booking not found"
+	  /user:
+	    post:
+	      tags:
+	      - "user"
+	      summary: "Create user"
+	      description: "This can only be done by the logged in user."
+	      operationId: "createUser"
+	      produces:
+	      - "application/xml"
+	      - "application/json"
+	      parameters:
+	      - in: "body"
+	        name: "body"
+	        description: "Created user object"
+	        required: true
+	        schema:
+	          $ref: "#/definitions/User"
+	      responses:
+	        default:
+	          description: "successful operation"
+	  /user/login:
+	    get:
+	      tags:
+	      - "user"
+	      summary: "Logs user into the system"
+	      description: ""
+	      operationId: "loginUser"
+	      produces:
+	      - "application/xml"
+	      - "application/json"
+	      parameters:
+	      - name: "username"
+	        in: "query"
+	        description: "The user name for login"
+	        required: true
+	        type: "string"
+	      - name: "password"
+	        in: "query"
+	        description: "The password for login in clear text"
+	        required: true
+	        type: "string"
+	      responses:
+	        200:
+	          description: "successful operation"
+	          schema:
+	            type: "string"
+	          headers:
+	            X-Rate-Limit:
+	              type: "integer"
+	              format: "int32"
+	              description: "calls per hour allowed by the user"
+	            X-Expires-After:
+	              type: "string"
+	              format: "date-time"
+	              description: "date in UTC when token expires"
+	        400:
+	          description: "Invalid username/password supplied"
+	  /user/logout:
+	    get:
+	      tags:
+	      - "user"
+	      summary: "Logs out current logged in user session"
+	      description: ""
+	      operationId: "logoutUser"
+	      produces:
+	      - "application/xml"
+	      - "application/json"
+	      parameters: []
+	      responses:
+	        default:
+	          description: "successful operation"
+	    put:
+	      tags:
+	      - "user"
+	      summary: "Updated user"
+	      description: "This can only be done by the logged in user."
+	      operationId: "updateUser"
+	      produces:
+	      - "application/xml"
+	      - "application/json"
+	      parameters:
+	      - name: "username"
+	        in: "path"
+	        description: "name that need to be updated"
+	        required: true
+	        type: "string"
+	      - in: "body"
+	        name: "body"
+	        description: "Updated user object"
+	        required: true
+	        schema:
+	          $ref: "#/definitions/User"
+	      responses:
+	        400:
+	          description: "Invalid user supplied"
+	        404:
+	          description: "User not found"
+	    delete:
+	      tags:
+	      - "user"
+	      summary: "Delete user"
+	      description: "This can only be done by the logged in user."
+	      operationId: "deleteUser"
+	      produces:
+	      - "application/xml"
+	      - "application/json"
+	      parameters:
+	      - name: "username"
+	        in: "path"
+	        description: "The name that needs to be deleted"
+	        required: true
+	        type: "string"
+	      responses:
+	        400:
+	          description: "Invalid username supplied"
+	        404:
+	          description: "User not found"
+	securityDefinitions:
+	  petstore_auth:
+	    type: "oauth2"
+	    authorizationUrl: "http://petstore.swagger.io/oauth/dialog"
+	    flow: "implicit"
+	    scopes:
+	      write:events: "modify events in your account"
+	      read:events: "read your events"
+	  api_key:
+	    type: "apiKey"
+	    name: "api_key"
+	    in: "header"
+	definitions:
+	  Purchase:
+	    type: "object"
+	    properties:
+	      id:
+	        type: "integer"
+	        format: "int64"
+	      EventId:
+	        type: "integer"
+	        format: "int64"
+	      tickets:
+	        type: "integer"
+	        format: "int32"
+	      EventDate:
+	        type: "string"
+	        format: "date-time"
+	      status:
+	        type: "string"
+	        description: "Ticket Status"
+	        enum:
+	        - "available"
+	        - "not available"
+	    xml:
+	      name: "Purchase"
+	  Booking:
+	    type: "object"
+	    properties:
+	      id:
+	        type: "integer"
+	        format: "int64"
+	      EventId:
+	        type: "integer"
+	        format: "int64"
+	      tickets:
+	        type: "integer"
+	        format: "int32"
+	      EventDate:
+	        type: "string"
+	        format: "date-time"
+	      status:
+	        type: "string"
+	        description: "Ticket Status"
+	        enum:
+	        - "available"
+	        - "booked"
+	    xml:
+	      name: "Booking"    
+	  User:
+	    type: "object"
+	    properties:
+	      id:
+	        type: "integer"
+	        format: "int64"
+	      username:
+	        type: "string"
+	      firstName:
+	        type: "string"
+	      lastName:
+	        type: "string"
+	      email:
+	        type: "string"
+	      password:
+	        type: "string"
+	      phone:
+	        type: "string"
+	      userStatus:
+	        type: "integer"
+	        format: "int32"
+	        description: "User Status"
+	    xml:
+	      name: "User"
+	  Tag:
+	    type: "object"
+	    properties:
+	      id:
+	        type: "integer"
+	        format: "int64"
+	      name:
+	        type: "string"
+	    xml:
+	      name: "Tag"
+	  Event:
+	    type: "object"
+	    required:
+	    - "name"
+	    properties:
+	      id:
+	        type: "integer"
+	        format: "int64"
+	      name:
+	        type: "string"
+	        example: "Some artist world tour"
+	      tags:
+	        type: "array"
+	        xml:
+	          name: "tag"
+	          wrapped: true
+	        items:
+	          $ref: "#/definitions/Tag"
+	      status:
+	        type: "string"
+	        description: "Ticket the store"
+	        enum:
+	        - "available"
+	        - "booked"
+	        - "sold"
+	    xml:
+	      name: "Event"
+	externalDocs:
+	  description: "Find out more about Swagger"
+	  url: "http://swagger.io"
