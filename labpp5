@@ -1,0 +1,390 @@
+contact:
+    email: apiteam@swagger.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+- url: https://Familystore.swagger.io/user
+- url: http://Familystore.swagger.io/admin
+tags:
+- name: User
+  description: What family member can do
+
+- name: Admin
+  description: Operations about user and store management
+
+paths:
+  /Family:
+    put:
+      tags:
+      - Admin
+      summary: Update an existing family budget
+      requestBody:
+        description: Family object that needs to be added to the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FamilyBudget'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/FamilyBudget'
+        required: true
+      responses:
+        400:
+          description: Invalid ID supplied
+          content: {}
+        404:
+          description: Family not found
+          content: {}
+        405:
+          description: Validation exception
+          content: {}
+    post:
+      tags:
+      - Admin
+      summary: Add a new family
+      requestBody:
+        description: Family object that needs to be added to the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FamilyBudget'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/FamilyBudget'
+        required: true
+      responses:
+        405:
+          description: Invalid input
+          content: {}
+  
+  /Family/{FamilyId}:
+    get:
+      tags:
+      - User
+      - Admin
+      summary: Find budget by ID
+      description: Returns a single Family
+      operationId: getFamilyById
+      parameters:
+      - name: FamilyId
+        in: path
+        description: ID of Family to return
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/FamilyBudget'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyBudget'
+        400:
+          description: Invalid ID supplied
+          content: {}
+        404:
+          description: Family not found
+          content: {}
+      security:
+      - api_key: []
+    post:
+      tags:
+      - Admin
+      - User
+      summary: Updates a family budget
+      parameters:
+      - name: FamilyId
+        in: path
+        description: ID of family that needs to be updated
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                budget:
+                  type: integer
+                  format: int64
+                  description: Updated emount of money
+      responses:
+        405:
+          description: Invalid input
+          content: {}
+
+    delete:
+      tags:
+      - Admin
+      summary: Deletes a family
+      parameters:
+      - name: api_key
+        in: header
+        schema:
+          type: string
+      - name: FamilyId
+        in: path
+        description: Family id to delete
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        400:
+          description: Invalid ID supplied
+          content: {}
+        404:
+          description: Family not found
+          content: {}
+  /user:
+    post:
+      tags:
+      - Admin
+      summary: Create user
+      description: This can only be done by the logged in user.
+      operationId: createUser
+      requestBody:
+        description: Created user object
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        default:
+          description: successful operation
+          content: {}
+      x-codegen-request-body-name: body
+
+  /user/login:
+    get:
+      tags:
+      - Admin
+      summary: Logs user into the system
+      operationId: loginUser
+      parameters:
+      - name: username
+        in: query
+        description: The user name for login
+        required: true
+        schema:
+          type: string
+      - name: password
+        in: query
+        description: The password for login in clear text
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+            X-Expires-After:
+              description: date in UTC when token expires
+              schema:
+                type: string
+                format: date-time
+          content:
+            application/xml:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+        400:
+          description: Invalid username/password supplied
+          content: {}
+  /user/logout:
+    get:
+      tags:
+      - Admin
+      summary: Logs out current logged in user session
+      operationId: logoutUser
+      responses:
+        default:
+          description: successful operation
+          content: {}
+  
+  /user/{username}:
+    get:
+      tags:
+      - Admin
+      summary: Get user by user name
+      operationId: getUserByName
+      parameters:
+      - name: username
+        in: path
+        description: 'The name that needs to be fetched. Use user1 for testing. '
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Invalid username supplied
+          content: {}
+        404:
+          description: User not found
+          content: {}
+    post:
+      tags:
+      - Admin
+      - User
+      summary: Updates a user`s budget
+      parameters:
+      - name: username
+        in: path
+        description: ID of user that needs to be updated
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                budget:
+                  type: integer
+                  format: int64
+                  description: Updated emount of money
+      responses:
+        405:
+          description: Invalid input
+          content: {}
+    put:
+      tags:
+      - Admin
+      summary: Updated user
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      parameters:
+      - name: username
+        in: path
+        description: name that need to be updated
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Updated user object
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        400:
+          description: Invalid user supplied
+          content: {}
+        404:
+          description: User not found
+          content: {}
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+      - Admin
+      summary: Delete user
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      parameters:
+      - name: username
+        in: path
+        description: The name that needs to be deleted
+        required: true
+        schema:
+          type: string
+      responses:
+        400:
+          description: Invalid username supplied
+          content: {}
+        404:
+          description: User not found
+          content: {}
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        familyId:
+          type: integer
+          format: int64
+        username:
+          type: string
+          example: Nagibator
+        firstname:
+          type: string
+          example: Ivan
+        lastName:
+          type: string
+          example: Terpai
+        email:
+          type: string
+          example: ohno228@gmail.com
+        password:
+          type: string
+          example: dfgdfgdgdf
+        budget:
+          type: integer
+          format: int64
+          example: 10000
+
+      xml:
+        name: User
+    FamilyBudget:
+      required:
+      - name
+      - photoUrls
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 2
+        name:
+          type: string
+          example: Terpai
+        budget:
+          type: integer
+          format: int64
+          example: 20000
+      xml:
+        name: Budget
+  securitySchemes:
+    Familystore_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: http://Familystore.swagger.io/oauth/dialog
+          scopes:
+            write:Familys: modify Familys in your account
+            read:Familys: read your Familys
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
